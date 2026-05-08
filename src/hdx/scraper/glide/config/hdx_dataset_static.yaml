@@ -1,0 +1,27 @@
+license_id: cc-by-igo
+methodology: Other
+methodology_other: |
+  GLIDE (GLobal IDEntifier) numbers are unique identifiers for disasters. Each disaster
+  event is registered with a GLIDEnumber that uniquely identifies it, enabling information
+  to be interoperable across multiple disaster information sources, both structured and
+  textual. Events are registered by the Asian Disaster Reduction Center (ADRC) in
+  collaboration with partner organisations including UN-OCHA, UNDRR, IFRC, and others.
+caveats: Indicators about loss and damage are optional and rarely entered/updated/reviewed, so they are not reliable.
+dataset_source: GLIDE Initiative
+package_creator: HDX Data Systems Team
+private: False
+notes: |
+  GLIDEnumbers are GLobal unique IDEntifiers for Disasters. Each disaster is registered
+  in a record that contains a GLIDEnumber that uniquely identifies it and allows
+  information to be interoperable across multiple disaster information sources, both
+  structured and textual.
+
+  Accessing disaster information can be a time consuming and laborious task. Not only is
+  data scattered but frequently identification of the disaster can be confusing in
+  countries with many disaster events and across borders. To address both of these issues,
+  Asian Disaster Reduction Center (ADRC) proposed a globally common Unique ID code for
+  disasters.
+
+  Among the institutions using actively GLIDEnumbers are UN-OCHA (ReliefWeb, FSCC, HDX),
+  UNDRR, UNDP, WMO, IFRC, FAO, the European Commission and the Centre for Research on
+  the Epidemiology of Disasters (CRED), among many others.
