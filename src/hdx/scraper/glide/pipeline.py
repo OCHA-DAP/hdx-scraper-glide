@@ -98,7 +98,7 @@ class Pipeline:
 
         dataset.set_maintainer(_MAINTAINER)
         dataset.set_organization(_OWNER_ORG)
-        dataset.set_expected_update_frequency("Every week")
+        dataset.set_expected_update_frequency("As needed")
         dataset.set_time_period(
             self._country_startdate[countryiso],
             self._country_enddate[countryiso],
@@ -107,11 +107,12 @@ class Pipeline:
 
         rows = self._events[countryiso]
         event_types = self._configuration["event_types"]
+        event_tags = self._configuration["event_tags"]
         tags = set()
         for row in rows:
             event_code = row.get("event", "")
-            if event_code in event_types:
-                tags.add(event_types[event_code])
+            row["event_name"] = event_types.get(event_code, "")
+            tags.update(event_tags.get(event_code, []))
         dataset.add_tags(sorted(tags))
 
         filename = f"{countryiso_lower}_glide_events.csv"

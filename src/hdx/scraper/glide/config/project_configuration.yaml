@@ -29,3 +29,87 @@ event_types:
   VW: "violent wind"
   WF: "wild fire"
   WV: "wave/surge"
+
+event_tags:
+  AC:
+    - "hazards and risk"
+  AV:
+    - "natural disasters"
+  CE:
+    - "complex emergency-conflict-security"
+  CW:
+    - "climate hazards"
+    - "natural disasters"
+  DR:
+    - "drought"
+    - "climate hazards"
+    - "natural disasters"
+  EC:
+    - "cyclones-hurricanes-typhoons"
+    - "climate hazards"
+    - "natural disasters"
+  EP:
+    - "epidemics-outbreaks"
+    - "disease"
+    - "health"
+  EQ:
+    - "earthquake-tsunami"
+    - "natural disasters"
+  ET:
+    - "climate hazards"
+    - "natural disasters"
+  FA:
+    - "food security"
+    - "malnutrition"
+  FF:
+    - "flooding"
+    - "natural disasters"
+  FL:
+    - "flooding"
+    - "natural disasters"
+  FR:
+    - "climate hazards"
+    - "natural disasters"
+  HT:
+    - "climate hazards"
+    - "natural disasters"
+  IN:
+    - "agriculture-livestock"
+    - "food security"
+  LS:
+    - "natural disasters"
+  MS:
+    - "natural disasters"
+  OT:
+    - "hazards and risk"
+  SL:
+    - "natural disasters"
+  SS:
+    - "flooding"
+    - "cyclones-hurricanes-typhoons"
+    - "natural disasters"
+  ST:
+    - "climate hazards"
+    - "natural disasters"
+  TC:
+    - "climate hazards"
+    - "cyclones-hurricanes-typhoons"
+    - "natural disasters"
+  TO:
+    - "climate hazards"
+    - "natural disasters"
+  TS:
+    - "earthquake-tsunami"
+    - "flooding"
+    - "natural disasters"
+  VO:
+    - "natural disasters"
+  VW:
+    - "climate hazards"
+    - "natural disasters"
+  WF:
+    - "climate hazards"
+    - "natural disasters"
+  WV:
+    - "flooding"
+    - "natural disasters"

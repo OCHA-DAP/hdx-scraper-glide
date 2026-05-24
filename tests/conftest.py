@@ -1,4 +1,5 @@
 from os.path import join
+from pathlib import Path
 
 import pytest
 from hdx.api.configuration import Configuration
@@ -10,17 +11,17 @@ from hdx.utilities.useragent import UserAgent
 
 @pytest.fixture(scope="session")
 def fixtures_dir():
-    return join("tests", "fixtures")
+    return Path("tests") / "fixtures"
 
 
 @pytest.fixture(scope="session")
 def input_dir(fixtures_dir):
-    return join(fixtures_dir, "input")
+    return fixtures_dir / "input"
 
 
 @pytest.fixture(scope="session")
-def config_dir(fixtures_dir):
-    return join("src", "hdx", "scraper", "glide", "config")
+def config_dir():
+    return Path("src") / "hdx" / "scraper" / "glide" / "config"
 
 
 @pytest.fixture(scope="session")
@@ -39,34 +40,20 @@ def configuration(config_dir):
     )
     Country.countriesdata(False)
     glide_tags = [
-        "cold wave",
-        "complex emergency",
+        "agriculture-livestock",
+        "climate hazards",
+        "complex emergency-conflict-security",
+        "cyclones-hurricanes-typhoons",
+        "disease",
         "drought",
-        "earthquake",
-        "epidemic",
-        "extratropical cyclone",
-        "extreme temperature",
-        "famine",
-        "fire",
-        "flash flood",
-        "flood",
-        "heat wave",
-        "insect infestation",
-        "land slide",
-        "mud slide",
-        "other",
-        "severe local storm",
-        "slide",
-        "snow avalanche",
-        "storm surge",
-        "tech. disaster",
-        "tornadoes",
-        "tropical cyclone",
-        "tsunami",
-        "violent wind",
-        "volcano",
-        "wave/surge",
-        "wild fire",
+        "earthquake-tsunami",
+        "epidemics-outbreaks",
+        "flooding",
+        "food security",
+        "hazards and risk",
+        "health",
+        "malnutrition",
+        "natural disasters",
     ]
     Vocabulary._tags_dict = {tag: {"Action to Take": "ok"} for tag in glide_tags}
     Vocabulary._approved_vocabulary = {

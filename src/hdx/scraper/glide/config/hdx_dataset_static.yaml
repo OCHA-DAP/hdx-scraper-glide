@@ -6,7 +6,11 @@ methodology_other: |
   to be interoperable across multiple disaster information sources, both structured and
   textual. Events are registered by the Asian Disaster Reduction Center (ADRC) in
   collaboration with partner organisations including UN-OCHA, UNDRR, IFRC, and others.
-caveats: Indicators about loss and damage are optional and rarely entered/updated/reviewed, so they are not reliable.
+caveats: Indicators about loss and damage are optional and rarely 
+  entered/updated/reviewed, so they are not reliable.
+
+  The data is collected every day, but individual country datasets are updated only if 
+  there are new events to report.
 dataset_source: GLIDE Initiative
 package_creator: HDX Data Systems Team
 private: False

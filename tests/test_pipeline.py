@@ -1,3 +1,4 @@
+from hdx.utilities.compare import assert_files_same
 from hdx.utilities.dateparse import parse_date
 from hdx.utilities.downloader import Download
 from hdx.utilities.path import temp_dir
@@ -8,7 +9,7 @@ from hdx.scraper.glide.pipeline import Pipeline
 
 class TestGlide:
     afg_dataset = {
-        "data_update_frequency": "7",
+        "data_update_frequency": "-2",
         "dataset_date": "[2025-03-15T00:00:00 TO 2025-04-20T23:59:59]",
         "groups": [{"name": "afg"}],
         "maintainer": "196196be-6037-4488-8b71-d786adf4c081",
@@ -17,11 +18,15 @@ class TestGlide:
         "subnational": "1",
         "tags": [
             {
-                "name": "earthquake",
+                "name": "earthquake-tsunami",
                 "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
             },
             {
-                "name": "flood",
+                "name": "flooding",
+                "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
+            },
+            {
+                "name": "natural disasters",
                 "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
             },
         ],
@@ -76,3 +81,6 @@ class TestGlide:
                 assert showcase is None
                 assert populated is False
                 assert len(dataset.get_resources()) == 0
+
+                filename = "afg_glide_events.csv"
+                assert_files_same(fixtures_dir / filename, tempdir / filename)
