@@ -1,1 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="0" skipped="0" tests="1" time="2.454" timestamp="2026-05-25T08:45:01.548414+12:00" hostname="Holly"><testcase classname="tests.test_pipeline.TestGlide" name="test_generate_dataset_and_showcase" time="2.324" /></testsuite></testsuites>
