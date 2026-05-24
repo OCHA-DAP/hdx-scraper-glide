@@ -67,36 +67,37 @@ class Pipeline:
         url = self._configuration["url"]
         json_data = self._retriever.download_json(url, "glide.json")
         glideset = json_data["glideset"]
-        min_year = self._today.year - 1
+        countryiso3s = set()
 
+        min_date = f"{self._today.year - 1}-01-01"
         for event in glideset:
-            year = event.get("year") or 0
-            if year < min_year:
+            countryiso3 = event.get("geocode", "")
+            if not countryiso3 or len(countryiso3) != 3:
                 continue
-            geocode = event.get("geocode", "")
-            if not geocode or len(geocode) != 3:
-                continue
-
-            month = event.get("month") or 1
-            day = event.get("day") or 1
+            countryiso3s.add(countryiso3)
+            year = event["year"]
+            month = event["month"]
+            day = event["day"]
             event_date = f"{year:04d}-{month:02d}-{day:02d}"
+            if event_date < min_date:
+                continue
 
-            existing_min = self._country_startdate.get(geocode)
+            existing_min = self._country_startdate.get(countryiso3)
             if not existing_min or event_date < existing_min:
-                self._country_startdate[geocode] = event_date
-            existing_max = self._country_enddate.get(geocode)
+                self._country_startdate[countryiso3] = event_date
+            existing_max = self._country_enddate.get(countryiso3)
             if not existing_max or event_date > existing_max:
-                self._country_enddate[geocode] = event_date
+                self._country_enddate[countryiso3] = event_date
 
             clean_event = {k: v for k, v in event.items() if k not in _EXCLUDED_FIELDS}
-            dict_of_lists_add(self._events, geocode, clean_event)
+            dict_of_lists_add(self._events, countryiso3, clean_event)
 
         if not self._events:
-            raise ValueError(f"No countries with events since {min_year}")
+            raise ValueError(f"No countries with events since {min_date}")
 
         self._headers = [h for h in _HEADERS if h not in _EXCLUDED_FIELDS]
 
-        return [{"iso3": iso3} for iso3 in sorted(self._events)]
+        return [{"iso3": iso3} for iso3 in sorted(countryiso3s)]
 
     def generate_dataset_and_showcase(self, countryiso: str) -> tuple:
         countryname = Country.get_country_name_from_iso3(countryiso)
