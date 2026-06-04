@@ -1,0 +1,4 @@
+glidenumber,number,docid,event,event_name,geocode,location,latitude,longitude,latitude2,longitude2,shape_type,year,month,day,status,killed,injured,homeless,affected,magnitude,duration,comments,source
+FL-2025-000001-AFG,2025-000001,1001,FL,flood,AFG,Kabul,34.5,69.2,0.0,0.0,0,2025,3,15,A,5,10,100,150,,0,Flooding in Kabul area,https://reliefweb.int/report/afghanistan/flooding
+EQ-2025-000002-AFG,2025-000002,1002,EQ,earthquake,AFG,Herat,34.3,62.2,0.0,0.0,0,2025,4,20,A,20,50,200,300,5.8,0,Earthquake near Herat,
+FL-2024-000100-AFG,2024-000100,900,FL,flood,AFG,Kandahar,31.6,65.7,0.0,0.0,0,2024,1,10,A,0,0,50,50,,0,"Old flood event, should be filtered out",
