@@ -10,7 +10,7 @@ from hdx.scraper.glide.pipeline import Pipeline
 class TestGlide:
     afg_dataset = {
         "data_update_frequency": "-2",
-        "dataset_date": "[2025-03-15T00:00:00 TO 2025-04-20T23:59:59]",
+        "dataset_date": "[2024-01-10T00:00:00 TO 2025-04-20T23:59:59]",
         "groups": [{"name": "afg"}],
         "maintainer": "196196be-6037-4488-8b71-d786adf4c081",
         "name": "afg-glide-events",
@@ -42,6 +42,35 @@ class TestGlide:
         "name": "sdn-glide-events",
         "title": "Sudan - GLIDE Disaster Events",
     }
+    global_dataset = {
+        "data_update_frequency": "-2",
+        "dataset_date": "[2024-01-10T00:00:00 TO 2025-04-20T23:59:59]",
+        "groups": [{"name": "world"}],
+        "maintainer": "196196be-6037-4488-8b71-d786adf4c081",
+        "name": "global-glide-events",
+        "owner_org": "ebcfe377-bad0-46d0-b68f-cca8e6b54e33",
+        "subnational": "1",
+        "tags": [
+            {
+                "name": "earthquake-tsunami",
+                "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
+            },
+            {
+                "name": "flooding",
+                "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
+            },
+            {
+                "name": "natural disasters",
+                "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
+            },
+        ],
+        "title": "Global - GLIDE Disaster Events",
+    }
+    global_resource = {
+        "description": "GLIDE disaster events for all countries",
+        "format": "csv",
+        "name": "glide_events_global.csv",
+    }
 
     def test_generate_dataset_and_showcase(
         self, configuration, fixtures_dir, input_dir, config_dir
@@ -61,7 +90,6 @@ class TestGlide:
                 today = parse_date("2026-05-07")
                 pipeline = Pipeline(configuration, retriever, today, tempdir)
                 countries = pipeline.get_countriesdata()
-                # Only AFG has events in year >= 2025; the 2024 event is filtered out
                 assert len(countries) == 1
 
                 dataset, showcase, populated = pipeline.generate_dataset_and_showcase(
@@ -83,4 +111,31 @@ class TestGlide:
                 assert len(dataset.get_resources()) == 0
 
                 filename = "afg_glide_events.csv"
+                assert_files_same(fixtures_dir / filename, tempdir / filename)
+
+    def test_generate_global_dataset(
+        self, configuration, fixtures_dir, input_dir, config_dir
+    ):
+        with temp_dir(
+            "TestGlideGlobal", delete_on_success=True, delete_on_failure=False
+        ) as tempdir:
+            with Download(user_agent="test") as downloader:
+                retriever = Retrieve(
+                    downloader=downloader,
+                    fallback_dir=tempdir,
+                    saved_dir=input_dir,
+                    temp_dir=tempdir,
+                    save=False,
+                    use_saved=True,
+                )
+                today = parse_date("2026-05-07")
+                pipeline = Pipeline(configuration, retriever, today, tempdir)
+                pipeline.get_countriesdata()
+
+                dataset = pipeline.generate_global_dataset()
+                assert dataset == self.global_dataset
+                resources = dataset.get_resources()
+                assert resources[0] == self.global_resource
+
+                filename = "glide_events_global.csv"
                 assert_files_same(fixtures_dir / filename, tempdir / filename)

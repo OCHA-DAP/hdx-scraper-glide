@@ -36,6 +36,7 @@ def configuration(config_dir):
         [
             {"name": "afg", "title": "Afghanistan"},
             {"name": "sdn", "title": "Sudan"},
+            {"name": "world", "title": "World"},
         ]
     )
     Country.countriesdata(False)

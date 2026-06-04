@@ -95,6 +95,21 @@ def main(
                             dataset.delete_from_hdx()
             logger.info(f"{deleted} datasets deleted")
 
+            global_dataset = pipeline.generate_global_dataset()
+            if global_dataset:
+                global_dataset.update_from_yaml(
+                    script_dir_plus_file(
+                        join("config", "hdx_dataset_static.yaml"), main
+                    )
+                )
+                logger.info(f"Updating {global_dataset['name']}")
+                global_dataset.create_in_hdx(
+                    remove_additional_resources=True,
+                    match_resource_order=False,
+                    updated_by_script=_UPDATED_BY_SCRIPT,
+                    batch=info["batch"],
+                )
+
 
 if __name__ == "__main__":
     facade(

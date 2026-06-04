@@ -20,6 +20,7 @@ _HEADERS = [
     "number",
     "docid",
     "event",
+    "event_name",
     "geocode",
     "location",
     "latitude",
@@ -69,7 +70,7 @@ class Pipeline:
         glideset = json_data["glideset"]
         countryiso3s = set()
 
-        min_date = f"{self._today.year - 1}-01-01"
+        min_date = f"{self._today.year - 2}-01-01"
         for event in glideset:
             countryiso3 = event.get("geocode", "")
             if not countryiso3 or len(countryiso3) != 3:
@@ -98,6 +99,50 @@ class Pipeline:
         self._headers = [h for h in _HEADERS if h not in _EXCLUDED_FIELDS]
 
         return [{"iso3": iso3} for iso3 in sorted(countryiso3s)]
+
+    def generate_global_dataset(self) -> Dataset | None:
+        if not self._events:
+            return None
+
+        dataset = Dataset(
+            {"name": "global-glide-events", "title": "Global - GLIDE Disaster Events"}
+        )
+        dataset.add_other_location("world")
+        dataset.set_maintainer(_MAINTAINER)
+        dataset.set_organization(_OWNER_ORG)
+        dataset.set_expected_update_frequency("As needed")
+        dataset.set_time_period(
+            min(self._country_startdate.values()),
+            max(self._country_enddate.values()),
+        )
+        dataset.set_subnational(True)
+
+        event_types = self._configuration["event_types"]
+        event_tags = self._configuration["event_tags"]
+        tags = set()
+        all_rows = []
+        for countryiso in sorted(self._events):
+            for row in self._events[countryiso]:
+                event_code = row.get("event", "")
+                row["event_name"] = event_types.get(event_code, "")
+                tags.update(event_tags.get(event_code, []))
+                all_rows.append(row)
+        dataset.add_tags(sorted(tags))
+
+        filename = "glide_events_global.csv"
+        resourcedata = {
+            "name": filename,
+            "description": "GLIDE disaster events for all countries",
+        }
+        dataset.generate_resource(
+            self._folder,
+            filename,
+            all_rows,
+            resourcedata,
+            headers=self._headers,
+            no_empty=False,
+        )
+        return dataset
 
     def generate_dataset_and_showcase(self, countryiso: str) -> tuple:
         countryname = Country.get_country_name_from_iso3(countryiso)
