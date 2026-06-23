@@ -1,12 +1,17 @@
 #!/usr/bin/python
 """Glide scraper"""
 
+import calendar
+import json
 import logging
+from os.path import join
 
 from hdx.api.configuration import Configuration
 from hdx.data.dataset import Dataset
 from hdx.data.hdxobject import HDXError
+from hdx.data.resource import Resource
 from hdx.location.country import Country
+from hdx.utilities.dateparse import parse_date
 from hdx.utilities.dictandlist import dict_of_lists_add
 from hdx.utilities.retriever import Retrieve
 
@@ -63,42 +68,82 @@ class Pipeline:
         self._country_startdate = {}
         self._country_enddate = {}
         self._headers = None
+        self._geojson_by_country = {}
+        self._global_geojson = None
 
     def get_countriesdata(self) -> list[dict]:
         url = self._configuration["url"]
         json_data = self._retriever.download_json(url, "glide.json")
         glideset = json_data["glideset"]
-        countryiso3s = set()
+        min_date = parse_date(f"{self._today.year - 2}-01-01")
+        all_country_events = {}
+        country_has_recent = set()
 
-        min_date = f"{self._today.year - 2}-01-01"
         for event in glideset:
             countryiso3 = event.get("geocode", "")
             if not countryiso3 or len(countryiso3) != 3:
                 continue
-            countryiso3s.add(countryiso3)
             year = event["year"]
             month = event["month"]
             day = event["day"]
-            event_date = f"{year:04d}-{month:02d}-{day:02d}"
-            if event_date < min_date:
-                continue
-
-            existing_min = self._country_startdate.get(countryiso3)
-            if not existing_min or event_date < existing_min:
-                self._country_startdate[countryiso3] = event_date
-            existing_max = self._country_enddate.get(countryiso3)
-            if not existing_max or event_date > existing_max:
-                self._country_enddate[countryiso3] = event_date
-
+            try:
+                event_date = parse_date(f"{year:04d}-{month:02d}-{day:02d}")
+            except ValueError:
+                day = max(day, 1)
+                month = max(month, 1)
+                _, last_day = calendar.monthrange(year, month)
+                day = min(day, last_day)
+                try:
+                    event_date = parse_date(f"{year:04d}-{month:02d}-{day:02d}")
+                except ValueError:
+                    logger.warning(
+                        f"Skipping event with invalid date: {year}-{month}-{day}"
+                    )
+                    continue
             clean_event = {k: v for k, v in event.items() if k not in _EXCLUDED_FIELDS}
-            dict_of_lists_add(self._events, countryiso3, clean_event)
+            dict_of_lists_add(
+                all_country_events, countryiso3, (event_date, clean_event)
+            )
+            if event_date >= min_date:
+                country_has_recent.add(countryiso3)
+
+        for countryiso3, dated_events in all_country_events.items():
+            if countryiso3 not in country_has_recent:
+                continue
+            for event_date, clean_event in dated_events:
+                existing_min = self._country_startdate.get(countryiso3)
+                if not existing_min or event_date < existing_min:
+                    self._country_startdate[countryiso3] = event_date
+                existing_max = self._country_enddate.get(countryiso3)
+                if not existing_max or event_date > existing_max:
+                    self._country_enddate[countryiso3] = event_date
+                dict_of_lists_add(self._events, countryiso3, clean_event)
 
         if not self._events:
             raise ValueError(f"No countries with events since {min_date}")
 
         self._headers = [h for h in _HEADERS if h not in _EXCLUDED_FIELDS]
 
-        return [{"iso3": iso3} for iso3 in sorted(countryiso3s)]
+        geojson_url = self._configuration["geojson_url"]
+        self._global_geojson = self._retriever.download_json(
+            geojson_url, "glide_global.geojson"
+        )
+        for iso3 in country_has_recent:
+            self._geojson_by_country[iso3] = self._retriever.download_json(
+                f"{geojson_url}?level1={iso3}", f"glide_{iso3.lower()}.geojson"
+            )
+
+        return [{"iso3": iso3} for iso3 in sorted(country_has_recent)]
+
+    def _add_geojson_resource(self, dataset, filename, geojson_data, description):
+        filepath = join(self._folder, filename)
+        with open(filepath, "w") as f:
+            json.dump(geojson_data, f)
+        resource = Resource(
+            {"name": filename, "description": description, "format": "geojson"}
+        )
+        resource.set_file_to_upload(filepath)
+        dataset.add_update_resource(resource)
 
     def generate_global_dataset(self) -> Dataset | None:
         if not self._events:
@@ -142,6 +187,13 @@ class Pipeline:
             headers=self._headers,
             no_empty=False,
         )
+        if self._global_geojson:
+            self._add_geojson_resource(
+                dataset,
+                "glide_events_global.geojson",
+                self._global_geojson,
+                "GLIDE disaster events GeoJSON for all countries",
+            )
         return dataset
 
     def generate_dataset_and_showcase(self, countryiso: str) -> tuple:
@@ -195,4 +247,11 @@ class Pipeline:
             headers=self._headers,
             no_empty=False,
         )
+        if countryiso in self._geojson_by_country:
+            self._add_geojson_resource(
+                dataset,
+                f"{countryiso_lower}_glide_events.geojson",
+                self._geojson_by_country[countryiso],
+                f"GLIDE disaster events GeoJSON for {countryname}",
+            )
         return dataset, None, True

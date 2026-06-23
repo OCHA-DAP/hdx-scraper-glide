@@ -1,5 +1,6 @@
 # Collector specific configuration
 url: "https://www.glidenumber.net/glide/jsonglideset.jsp"
+geojson_url: "https://www.glidenumber.net/glide/geojsonglideset.jsp"
 event_types:
   AC: "tech. disaster"
   AV: "snow avalanche"

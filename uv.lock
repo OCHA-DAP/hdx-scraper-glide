@@ -345,7 +345,7 @@ wheels = [
 
 [[package]]
 name = "hdx-python-api"
-version = "6.6.7"
+version = "6.6.8"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "ckanapi" },
@@ -356,9 +356,9 @@ dependencies = [
     { name = "makefun" },
     { name = "requests" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/13/18/47bc34144f7a46299b2eb3951da2b84fdb6069229f8928131ccf28d918a7/hdx_python_api-6.6.7.tar.gz", hash = "sha256:69270a6ccb9ce3cd033446d3b9919a715f491cea0469e6918ecf271daae81d3d", size = 523339, upload-time = "2026-04-07T03:37:38.16Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/3d/ce/1196497a828393b5dc4a6fb1156633ce31906506c61b9d288a4dda2c333e/hdx_python_api-6.6.8.tar.gz", hash = "sha256:4943f153289c3df8eccd36f45f9b8ed272268f9661cc8964170152ff6ce91ef4", size = 525234, upload-time = "2026-05-18T03:27:16.325Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/d2/98/d913ac3cf8f37dfd5bc16fdb0ce67d47cc0bf0236a56d397bf96e4099224/hdx_python_api-6.6.7-py3-none-any.whl", hash = "sha256:7dedf97e69cf16e9eaf0cff1d02be13c7daba0d390baacabd30ddbaecab7d4f6", size = 70456, upload-time = "2026-04-07T03:37:36.647Z" },
+    { url = "https://files.pythonhosted.org/packages/c8/95/6a65329e37d7e9cd14688a4dd8e72f88b3e0f8dcd1299769d80c03344c61/hdx_python_api-6.6.8-py3-none-any.whl", hash = "sha256:ead86411c82f0774114184747f0121e1928a8a52e6339d8ea28b479faabe1827", size = 70808, upload-time = "2026-05-18T03:27:18.261Z" },
 ]
 
 [[package]]
@@ -376,7 +376,7 @@ wheels = [
 
 [[package]]
 name = "hdx-python-utilities"
-version = "4.0.8"
+version = "4.1.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "frictionless" },
@@ -395,9 +395,9 @@ dependencies = [
     { name = "xlsx2csv" },
     { name = "xlwt" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/6f/05/35b56fae90e5c5e9c6cfc6250ab17d1ab54c20db381aee4cef2cc7005e5e/hdx_python_utilities-4.0.8.tar.gz", hash = "sha256:53a9c45f7be4ce15d4ae3c039ad696ca5dd0b1ee64f4c623a06c7ea66c4dc3b0", size = 2108216, upload-time = "2026-02-26T02:17:05.493Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/ac/36/37cc457759fe9f3c089119d19a0407a3e439accd728955fe76c5b02df33a/hdx_python_utilities-4.1.1.tar.gz", hash = "sha256:b587c6f2bf45313bea56db9ce7050fa3be941699393a836ed7eaad819013d37a", size = 2109503, upload-time = "2026-06-15T02:49:32.318Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/fc/8b/d23c78422ce1754cd4d93df8f41bea79defb1a0672d0860d7929348abcec/hdx_python_utilities-4.0.8-py3-none-any.whl", hash = "sha256:d6f608c680ec3a19357e0e6506fed25f8c8b9ac253e1886962e60f7817de6cd6", size = 66204, upload-time = "2026-02-26T02:17:04.091Z" },
+    { url = "https://files.pythonhosted.org/packages/05/d4/62d1e1db7a176b1d5559ac10924bffa079ff1bc5fa5c3b8926ff0a7e40f1/hdx_python_utilities-4.1.1-py3-none-any.whl", hash = "sha256:537ae516889d0bfe9d00d2243dfff0761cf651763560604edc2f899de9e068bd", size = 64276, upload-time = "2026-06-15T02:49:31.031Z" },
 ]
 
 [[package]]
@@ -1363,11 +1363,11 @@ wheels = [
 
 [[package]]
 name = "xlsx2csv"
-version = "0.8.6"
+version = "0.8.4"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/62/36/9d53c4a72dcdc08fcf46f3d02f71f22bc693bb66e87bd935e0c9668500ad/xlsx2csv-0.8.6.tar.gz", hash = "sha256:618fc502612860de8ab8e3d6195e99ef332fffc68337f6b89e59690aad0d20b5", size = 228308, upload-time = "2026-01-30T15:59:08.47Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/36/20/94860286a308a4213581c1beacd4fc7be724250c03583fcff23aaa6107bb/xlsx2csv-0.8.4.tar.gz", hash = "sha256:2aa809888826f6af5b26c77fc7f613f2bbeada0d8cc09e5a58e0f59684bb6911", size = 221390, upload-time = "2024-11-19T17:06:07.818Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/f4/d6/9fd7e753a927cb11d039848a659124e6ec4cfe008704bb2790df7712c36d/xlsx2csv-0.8.6-py3-none-any.whl", hash = "sha256:415341e348b4c474cc84a4c23c4d116e0be07c89be6a84c5fde5e4c948db1943", size = 17204, upload-time = "2026-01-31T10:35:20.653Z" },
+    { url = "https://files.pythonhosted.org/packages/c4/c0/15c21556362c67f1155f3643a375d50ac67559b82c768e64e800a42a2577/xlsx2csv-0.8.4-py3-none-any.whl", hash = "sha256:52ab873fc7b2f2ca75d14aee8bd1985a9f5c1bcb3cc7b80df7a5d57a40a67473", size = 15904, upload-time = "2024-11-19T17:06:05.362Z" },
 ]
 
 [[package]]
