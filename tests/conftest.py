@@ -35,6 +35,7 @@ def configuration(config_dir):
     Locations.set_validlocations(
         [
             {"name": "afg", "title": "Afghanistan"},
+            {"name": "col", "title": "Colombia"},
             {"name": "sdn", "title": "Sudan"},
             {"name": "world", "title": "World"},
         ]

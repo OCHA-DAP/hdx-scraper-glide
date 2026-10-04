@@ -77,6 +77,7 @@ def main(
                                 join("config", "hdx_dataset_static.yaml"), main
                             )
                         )
+                        pipeline.add_filter_notice(dataset)
                         logger.info(f"Updating {dataset['name']}")
                         dataset.create_in_hdx(
                             remove_additional_resources=True,
@@ -102,6 +103,7 @@ def main(
                         join("config", "hdx_dataset_static.yaml"), main
                     )
                 )
+                pipeline.add_filter_notice(global_dataset)
                 logger.info(f"Updating {global_dataset['name']}")
                 global_dataset.create_in_hdx(
                     remove_additional_resources=True,
