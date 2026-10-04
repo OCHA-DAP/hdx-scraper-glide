@@ -70,19 +70,23 @@ class Pipeline:
         self._headers = None
         self._geojson_by_country = {}
         self._global_geojson = None
+        self._min_date = None
+        self._global_rows = []
+        self._global_startdate = None
+        self._global_enddate = None
 
     def get_countriesdata(self) -> list[dict]:
         url = self._configuration["url"]
         json_data = self._retriever.download_json(url, "glide.json")
         glideset = json_data["glideset"]
-        min_date = parse_date(f"{self._today.year - 2}-01-01")
+        min_date = parse_date(f"{self._today.year - 4}-01-01")
+        self._min_date = min_date
         all_country_events = {}
         country_has_recent = set()
 
         for event in glideset:
-            countryiso3 = event.get("geocode", "")
-            if not countryiso3 or len(countryiso3) != 3:
-                continue
+            clean_event = {k: v for k, v in event.items() if k not in _EXCLUDED_FIELDS}
+            self._global_rows.append(clean_event)
             year = event["year"]
             month = event["month"]
             day = event["day"]
@@ -100,7 +104,14 @@ class Pipeline:
                         f"Skipping event with invalid date: {year}-{month}-{day}"
                     )
                     continue
-            clean_event = {k: v for k, v in event.items() if k not in _EXCLUDED_FIELDS}
+            if not self._global_startdate or event_date < self._global_startdate:
+                if event_date.year > 1900:
+                    self._global_startdate = event_date
+            if not self._global_enddate or event_date > self._global_enddate:
+                self._global_enddate = event_date
+            countryiso3 = event.get("geocode", "")
+            if not countryiso3 or len(countryiso3) != 3:
+                continue
             dict_of_lists_add(
                 all_country_events, countryiso3, (event_date, clean_event)
             )
@@ -146,8 +157,13 @@ class Pipeline:
         resource.set_file_to_upload(filepath)
         dataset.add_update_resource(resource)
 
+    def add_filter_notice(self, dataset: Dataset) -> None:
+        min_date = f"{self._min_date.day} {self._min_date:%B %Y}"
+        notice = self._configuration["filter_notice"].format(min_date=min_date)
+        dataset["notes"] = f"{dataset['notes'].rstrip()}\n\n{notice}"
+
     def generate_global_dataset(self) -> Dataset | None:
-        if not self._events:
+        if not self._global_rows:
             return None
 
         dataset = Dataset(
@@ -157,22 +173,17 @@ class Pipeline:
         dataset.set_maintainer(_MAINTAINER)
         dataset.set_organization(_OWNER_ORG)
         dataset.set_expected_update_frequency("As needed")
-        dataset.set_time_period(
-            min(self._country_startdate.values()),
-            max(self._country_enddate.values()),
-        )
+        dataset.set_time_period(self._global_startdate, self._global_enddate)
         dataset.set_subnational(True)
 
         event_types = self._configuration["event_types"]
         event_tags = self._configuration["event_tags"]
         tags = set()
-        all_rows = []
-        for countryiso in sorted(self._events):
-            for row in self._events[countryiso]:
-                event_code = row.get("event", "")
-                row["event_name"] = event_types.get(event_code, "")
-                tags.update(event_tags.get(event_code, []))
-                all_rows.append(row)
+        all_rows = sorted(self._global_rows, key=lambda row: row.get("geocode", ""))
+        for row in all_rows:
+            event_code = row.get("event", "")
+            row["event_name"] = event_types.get(event_code, "")
+            tags.update(event_tags.get(event_code, []))
         dataset.add_tags(sorted(tags))
 
         filename = "glide_events_global.csv"

@@ -1,5 +1,6 @@
 import json
 
+from hdx.data.dataset import Dataset
 from hdx.utilities.compare import assert_files_same
 from hdx.utilities.dateparse import parse_date
 from hdx.utilities.downloader import Download
@@ -51,13 +52,25 @@ class TestGlide:
     }
     global_dataset = {
         "data_update_frequency": "-2",
-        "dataset_date": "[2023-11-01T00:00:00 TO 2025-04-20T23:59:59]",
+        "dataset_date": "[2019-07-01T00:00:00 TO 2025-04-20T23:59:59]",
         "groups": [{"name": "world"}],
         "maintainer": "196196be-6037-4488-8b71-d786adf4c081",
         "name": "global-glide-events",
         "owner_org": "ebcfe377-bad0-46d0-b68f-cca8e6b54e33",
         "subnational": "1",
         "tags": [
+            {
+                "name": "climate hazards",
+                "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
+            },
+            {
+                "name": "cyclones-hurricanes-typhoons",
+                "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
+            },
+            {
+                "name": "drought",
+                "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
+            },
             {
                 "name": "earthquake-tsunami",
                 "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
@@ -102,7 +115,7 @@ class TestGlide:
                 today = parse_date("2026-05-07")
                 pipeline = Pipeline(configuration, retriever, today, tempdir)
                 countries = pipeline.get_countriesdata()
-                assert len(countries) == 1
+                assert countries == [{"iso3": "AFG"}, {"iso3": "COL"}]
 
                 dataset, showcase, populated = pipeline.generate_dataset_and_showcase(
                     "AFG"
@@ -113,6 +126,11 @@ class TestGlide:
                 resources = dataset.get_resources()
                 assert resources[0] == self.afg_resource
                 assert resources[1] == self.afg_geojson_resource
+
+                # Country whose only event is in 2022
+                dataset, _, populated = pipeline.generate_dataset_and_showcase("COL")
+                assert dataset["name"] == "col-glide-events"
+                assert populated is True
 
                 # Country with no events in the time window
                 dataset, showcase, populated = pipeline.generate_dataset_and_showcase(
@@ -166,9 +184,32 @@ class TestGlide:
                     tempdir / "glide_events_global.geojson",
                 )
 
+    def test_add_filter_notice(self, configuration, input_dir, tmp_path):
+        with Download(user_agent="test") as downloader:
+            retriever = Retrieve(
+                downloader=downloader,
+                fallback_dir=tmp_path,
+                saved_dir=input_dir,
+                temp_dir=tmp_path,
+                save=False,
+                use_saved=True,
+            )
+            today = parse_date("2026-05-07")
+            pipeline = Pipeline(configuration, retriever, today, tmp_path)
+            pipeline.get_countriesdata()
+        dataset = Dataset({"notes": "GLIDE description\n"})
+        pipeline.add_filter_notice(dataset)
+        assert dataset["notes"] == (
+            "GLIDE description\n\nCountry datasets are only produced for countries "
+            "with at least one GLIDE event since 1 January 2022. The global dataset "
+            "contains all events available from the GLIDE API, including those not "
+            "assigned to a country."
+        )
+
     def test_invalid_dates(self, configuration, tmp_path):
         # day=0 in April 2025 → clamped to 2025-04-01 (recent, triggers country_has_recent)
         # day=31 in April 1998 → clamped to 1998-04-30 (April has 30 days)
+        # year=0 → unparseable, kept in global rows only
         glide_data = {
             "glideset": [
                 {
@@ -229,6 +270,35 @@ class TestGlide:
                     "idsource": "",
                     "features": [],
                 },
+                {
+                    "glidenumber": "FL-0000-000002-AFG",
+                    "number": "0000-000002",
+                    "docid": 9003,
+                    "event": "FL",
+                    "geocode": "AFG",
+                    "year": 0,
+                    "month": 4,
+                    "day": 31,
+                    "time": "",
+                    "location": "Kabul",
+                    "latitude": 34.5,
+                    "longitude": 69.2,
+                    "latitude2": 0.0,
+                    "longitude2": 0.0,
+                    "shape_type": 0,
+                    "status": "A",
+                    "killed": 0,
+                    "injured": 0,
+                    "homeless": 0,
+                    "affected": 0,
+                    "duration": 0,
+                    "magnitude": "",
+                    "source": "",
+                    "comments": "",
+                    "id": "",
+                    "idsource": "",
+                    "features": [],
+                },
             ]
         }
         input_dir = tmp_path / "input"
@@ -253,5 +323,6 @@ class TestGlide:
 
         assert countries == [{"iso3": "AFG"}]
         assert len(pipeline._events["AFG"]) == 2
+        assert len(pipeline._global_rows) == 3
         assert pipeline._country_startdate["AFG"] == parse_date("1998-04-30")
         assert pipeline._country_enddate["AFG"] == parse_date("2025-04-01")

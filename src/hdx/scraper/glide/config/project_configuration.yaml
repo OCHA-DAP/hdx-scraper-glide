@@ -1,6 +1,9 @@
 # Collector specific configuration
 url: "https://www.glidenumber.net/glide/jsonglideset.jsp"
 geojson_url: "https://www.glidenumber.net/glide/geojsonglideset.jsp"
+filter_notice: "Country datasets are only produced for countries with at least one
+  GLIDE event since {min_date}. The global dataset contains all events available from
+  the GLIDE API, including those not assigned to a country."
 event_types:
   AC: "tech. disaster"
   AV: "snow avalanche"
